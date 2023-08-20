@@ -1,6 +1,6 @@
 import cv2 as cv
 
-def get_variance(image, threshold):
+def get_variance(image):
     #convert to greyscale
     grey = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 

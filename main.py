@@ -1,15 +1,17 @@
 import cv2 as cv
 import ImageLoader
-import Variance
 
-images_path = "images/"
-images = ImageLoader.load_images(images_path)
+path = 'videos/video_crop.ser'
 
-for image in images:
-    image._variance = Variance.get_variance(image._cv , 120)
-    print("variance:", image._variance)
+frames = ImageLoader.analyse_video(path)
+# frames is a dict which associates the index of a frame to its variance. The dict is then sorted by highest variance
+# frames_index is a list that stores the index of the frames sorted previously 
+frames, frames_index = ImageLoader.sort_index_frames_by_variance(frames)
 
-images.sort(key=lambda x: x._variance, reverse=True)
+#for frame in frames:
+#    print(frame)
+#print("########")
+#for frame in frames_index:
+#    print(frame)
 
-for image in images:
-    print(image._variance)
+ImageLoader.create_trackbar(frames_index, path)
