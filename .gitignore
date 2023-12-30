@@ -161,4 +161,7 @@ cython_debug/
 
 images/
 videos/
+video_crop/
 test.py
+*.png
+*.tif
