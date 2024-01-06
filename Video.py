@@ -34,12 +34,13 @@ def playVideo(self):
     self.video_is_paused = not self.video_is_paused
     if not self.video_is_paused:
         self.play_video_button.setText("Pause")
-        while not self.closeProgram:
+        while not self.close_program:
         # Si video en pause
             while self.video_is_paused:
                 QApplication.processEvents()
             if self.showFrameVideo() == 0:
                 self.trackbar.setValue(0)
+                self.trackbar_label.setText(str(self.trackbar.value()))
             else:
                 self.updateIndex()
                 

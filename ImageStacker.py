@@ -48,7 +48,7 @@ class GUI(QMainWindow):
         self.video_label = QLabel(self)
         self.frame_index = 0
         self.cursor_moved_by_user = False
-        self.closeProgram = False
+        self.close_program = False
 
         self.initGUI()
 
@@ -86,6 +86,7 @@ class GUI(QMainWindow):
                 return
             self.video.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
             self.showFrameVideo()
+            self.trackbar_label.setText(str(self.trackbar.value()))
 
     def play(self):
         self.cursor_moved_by_user = False
@@ -102,12 +103,16 @@ class GUI(QMainWindow):
         self.trackbar.sliderPressed.connect(self.pause)
         self.trackbar.sliderReleased.connect(self.play)
 
+        self.trackbar_label = QLabel()
+
+        data_video_layout.addWidget(self.trackbar_label)
         data_video_layout.addWidget(self.trackbar)
 
     def updateIndex(self):
         if self.frame_index < self.video_len - 1:
             self.frame_index += 1
             self.trackbar.setValue(self.frame_index)
+            self.trackbar_label.setText(str(self.trackbar.value()))
 
     def showFrameVideo(self):
         pass
@@ -154,7 +159,7 @@ class GUI(QMainWindow):
         if self.video and self.video.isOpened():
             self.video.release()
             self.video_is_paused = False
-            self.closeProgram = True
+            self.close_program = True
 
         event.accept()
 
