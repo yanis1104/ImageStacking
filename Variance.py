@@ -1,9 +1,9 @@
-import cv2 as cv
+import cv2
 
 def get_variance(image):
     #convert to greyscale
-    grey = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     #calculate the variance according with the laplacian of the image
-    variance = cv.Laplacian(grey, cv.CV_64F).var()
+    variance = cv2.Laplacian(grey, cv2.CV_64F).var()
     return variance
