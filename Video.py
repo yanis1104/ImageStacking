@@ -8,6 +8,17 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QImage, QPixmap
 
+def openVideo(self):
+    if not self.video.isOpened():
+        QMessageBox.information(self, 'Error', 'Cannot open file')
+        return
+
+    self.play_video_button.setEnabled(True)
+    self.analyze_button.setEnabled(True)
+    self.video_len = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+    self.trackbar.setMinimum(0)
+    self.trackbar.setMaximum(self.video_len - 1)
+
 def openFile(self):
     options = QFileDialog.Options()
     options |= QFileDialog.ReadOnly
@@ -18,17 +29,6 @@ def openFile(self):
         self.openVideo()
         self.trackbar.setValue(0)
         self.showFrameVideo()
-        self.updateIndex()
-
-def openVideo(self):
-    if not self.video.isOpened():
-        QMessageBox.information(self, 'Error', 'Cannot open file')
-        return
-
-    self.play_video_button.setEnabled(True)
-    self.video_len = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
-    self.trackbar.setMinimum(0)
-    self.trackbar.setMaximum(self.video_len - 1)
 
 def playVideo(self):
     self.video_is_paused = not self.video_is_paused

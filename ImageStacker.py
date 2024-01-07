@@ -9,6 +9,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QImage, QPixmap
 
 import Video
+import Variance
 
 #def old():
     ## Chemin vers le dossier contenant les images
@@ -50,6 +51,8 @@ class GUI(QMainWindow):
         self.cursor_moved_by_user = False
         self.close_program = False
 
+        self.frames = {}
+
         self.initGUI()
 
 
@@ -78,6 +81,28 @@ class GUI(QMainWindow):
         # Ajoute le bouton au layout
         data_video_layout.addWidget(self.play_video_button)
 
+    def analyzeVideo(self):
+        self.frame_index = 0
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
+        while(True):
+            ret, frame = self.video.read()
+            if ret:
+                variance = Variance.get_variance(frame)
+                self.frames[self.frame_index] = variance
+                print(self.frames[self.frame_index])
+                self.frame_index += 1
+            else:
+                break
+        self.frame_index = 0
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, self.frame_index)
+
+    def createAnalyzeButton(self, data_analyze_layout :QVBoxLayout):
+        self.analyze_button = QPushButton('Analyze', self)
+        self.analyze_button.setMaximumSize(50, 30)
+        self.analyze_button.setEnabled(False)
+        self.analyze_button.clicked.connect(self.analyzeVideo)
+        data_analyze_layout.addWidget(self.analyze_button)
+
     def accessFrameIndex(self):
         if self.cursor_moved_by_user:
             self.frame_index = self.trackbar.value()
@@ -99,17 +124,18 @@ class GUI(QMainWindow):
         self.trackbar.setOrientation(1)
         self.trackbar.setMinimum(0)
         self.trackbar.setMaximum(0)
-        self.trackbar.sliderMoved.connect(self.accessFrameIndex)
+        self.trackbar.setValue(0)
+        self.trackbar.valueChanged.connect(self.accessFrameIndex)
         self.trackbar.sliderPressed.connect(self.pause)
         self.trackbar.sliderReleased.connect(self.play)
 
-        self.trackbar_label = QLabel()
+        self.trackbar_label = QLabel("0")
 
         data_video_layout.addWidget(self.trackbar_label)
         data_video_layout.addWidget(self.trackbar)
 
     def updateIndex(self):
-        if self.frame_index < self.video_len - 1:
+        if self.frame_index < self.video_len:
             self.frame_index += 1
             self.trackbar.setValue(self.frame_index)
             self.trackbar_label.setText(str(self.trackbar.value()))
@@ -137,6 +163,11 @@ class GUI(QMainWindow):
         data_view_layout = QVBoxLayout()
         data_video_layout = QVBoxLayout()
 
+        data_settings_layout = QVBoxLayout()
+        data_analyze_layout = QVBoxLayout()
+        data_stack_layout = QVBoxLayout()
+        data_log_layout = QVBoxLayout()
+
 
         # Définit le layout du widget central
         central_widget.setLayout(main_layout)
@@ -147,9 +178,15 @@ class GUI(QMainWindow):
         data_handler_layout.addLayout(data_view_layout)
         data_handler_layout.addLayout(data_video_layout)
 
+        main_layout.addLayout(data_settings_layout)
+        data_settings_layout.addLayout(data_analyze_layout)
+        data_settings_layout.addLayout(data_stack_layout)
+        data_settings_layout.addLayout(data_log_layout)
+
         self.createOpenFileButton(data_load_layout)
         self.createPlayButton(data_video_layout)
         self.createTrackBar(data_handler_layout)
+        self.createAnalyzeButton(data_analyze_layout)
 
         self.video_size_factor = 1.0
         data_layout.addWidget(self.video_label)
