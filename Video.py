@@ -14,10 +14,14 @@ def openVideo(self):
         return
 
     self.play_video_button.setEnabled(True)
-    self.analyze_button.setEnabled(True)
+    self.analyse_button.setEnabled(True)
     self.video_len = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
     self.trackbar.setMinimum(0)
     self.trackbar.setMaximum(self.video_len - 1)
+    self.frame_index = 0
+    self.frames = {}
+    self.sorted_frames_index = []
+    self.is_video_analysed = False
 
 def openFile(self):
     options = QFileDialog.Options()
@@ -47,6 +51,10 @@ def playVideo(self):
     self.play_video_button.setText("Play")
 
 def showFrameVideo(self):
+    if self.is_video_analysed:
+        if self.frame_index < self.video_len:
+            self.video.set(cv2.CAP_PROP_POS_FRAMES, self.sorted_frames_index[self.frame_index])
+
     ret, frame = self.video.read()
 
     # Si la lecture de la vidéo est terminée
